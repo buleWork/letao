@@ -20,18 +20,32 @@
         <span class="title">收货地址管理</span>
     </header>
     <div class="cz_container">
-        <div class="form_box">
-            <div class="mui-input-row">
-                <input name="delivery" type="text" placeholder="收货人">
+        <form action="" class="from">
+            <div class="form_box">
+                <div class="region">
+                    <select id="p" data-id="">
+                        <option value="">请选择省份</option>
+                    </select>
+                    <select id="c" data-id="" >
+                        <option value="">请选择城市</option>
+                    </select>           
+                    <select id="d" data-id="">
+                        <option value="">请选择区/县</option>
+                    </select>
+                </div> 
+                <div class="mui-input-row">
+                    <input name="recipients" type="text" placeholder="收货人">
+                </div>
+                <div class="mui-input-row">
+                    <input name="postcode" type="text" placeholder="邮编">
+                </div>
+                <div class="mui-input-row">
+                    <textarea name="addressDetail" id="textarea" rows="5" placeholder="多行文本框"></textarea>
+                </div>
+                <button type="submit" class="mui-btn mui-btn-primary btn_login">确认</button>
             </div>
-            <div class="mui-input-row">
-                <input name="postCode" type="text" placeholder="邮编">
-            </div>
-            <div class="mui-input-row">
-                <textarea name="address" id="textarea" rows="5" placeholder="多行文本框"></textarea>
-            </div>
-            <a href="index.html" class="mui-btn mui-btn-primary btn_login">确认</a>
-        </div>
+        </form>
+
     </div>
     <footer class="cz_tabs">
         <a class="tab_home fa fa-home" href="../index.html"><span>首页</span></a>
@@ -41,5 +55,44 @@
     </footer>
 </div>
 <script src="../res/mui/js/mui.min.js"></script>
+<script src="../js/jquery.min.js"></script>
+<script src="../js/jquery.region.js"></script>
+<script>
+    // 使用jQuery 插件生成省市县
+    $('.region').region({
+        url:'../js/region.json'
+    });
+
+    //1将用户填写的信息
+    //2.发送ajax请求
+    //3.等待相应
+    $('.from').on('submit',function(){
+        //获取用户信息
+        var data = $(this).serialize();
+        //data 中不包括 省市县 信息
+        //需要动手获取并拼凑
+       var p =  $('#p option:selected').text();
+       var c =  $('#c option:selected').text();
+       var d =  $('#d option:selected').text();
+       
+       data += '$address=' + p + c + d; 
+    //    console.log(address);
+    //    return false;
+    // 2.发送用户信息
+        $.ajax({
+           url: '/api/address/addAddress',
+           type: 'post',
+           data: data,
+           success: function(info){
+               console.log(info)
+               if(info.success) {
+                   location.href = './address.html'
+               }
+           }
+        })
+
+        return false;
+    })
+</script>
 </body>
 </html>
